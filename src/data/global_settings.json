@@ -1,6 +1,6 @@
 {
   "title": "SOFA MAP",
-  "description": "我們正在努力打造一個革命性的虛擬探索平台，讓「旅行」不再受限於時間與空間。坐在您最舒適的沙發裡，準備好探索全球每一個角落。",
+  "description": "你的 居家全球漫遊平台！我們正在努力打造一個革命性的虛擬探索平台，讓「旅行」不再受限於時間與空間。坐在您最舒適的沙發裡，準備好探索全球每一個角落。",
   "social_image": "/1200x630.jpg",
   "base_url": "https://sofamap.com",
   "demo": {
@@ -35,23 +35,23 @@
   "social_links": [
     {
       "title": "Twitter / X",
-      "link": "https://x.com/blackspikeltd/"
+      "link": "https://x.com/mountoslab/"
     },
     {
       "title": "Mastodon",
-      "link": "https://mastodon.cloud/@blackspike"
+      "link": "https://mastodon.cloud/"
     },
     {
       "title": "GitHub",
-      "link": "https://github.com/blackspike/"
+      "link": "https://github.com/mountos/"
     },
     {
       "title": "LinkedIn",
-      "link": "https://www.linkedin.com/company/blackspike"
+      "link": "https://www.linkedin.com/company/mountos"
     },
     {
-      "title": "Bluesky",
-      "link": "https://bsky.app/profile/blackspike.com/"
+      "title": "Mountos",
+      "link": "https://mountos.com/"
     }
   ]
 }
