@@ -16,3 +16,10 @@
     "tailwindcss": "^4.1.11"
   }
 }
+
+{
+  "scripts": {
+    "prebuild": "npm install sharp",
+    "build": "astro build"
+  }
+}
