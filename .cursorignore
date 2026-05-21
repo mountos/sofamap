@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+bower_components/
+
+# Build & OS Outputs
+dist/
+build/
+out/
+.next/
+.astro/
+.output/
+.DS_Store
+Thumbs.db
+
+# Logs & Cache
+*.log
+logs/
+.npm_cache/
+.npm/
+.cache/
+
+# Lock Files (High noise for AI)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+*.lock
+
+# Binary & Media Assets (Images allowed per user request)
+*.mp4
+*.mp3
+*.pdf
+*.zip
+*.gz
+*.woff
+*.woff2
+*.ttf
+
+# IDE/Tools
+.vscode/
+.idea/
+.cursor/
