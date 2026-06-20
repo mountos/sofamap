@@ -1,6 +1,6 @@
 ---
 // PWAInstallPrompt.astro
-// A premium glassmorphism A2HS prompt component for PWA installation
+// A premium glassmorphism A2HS prompt and floating controls component
 ---
 
 <div id="pwa-install-prompt" class="pwa-prompt hidden">
@@ -45,6 +45,24 @@
     </div>
   </div>
   <div class="pwa-prompt-arrow"></div>
+</div>
+
+<!-- Floating Action Buttons -->
+<div class="pwa-floating-buttons">
+  <!-- Back to Home -->
+  <a href="/" id="pwa-home-btn" class="pwa-float-btn hidden" aria-label="Go to Home">
+    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </a>
+  
+  <!-- Scroll to Top -->
+  <button id="pwa-top-btn" class="pwa-float-btn hidden" aria-label="Scroll to Top">
+    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
 </div>
 
 <style>
@@ -229,19 +247,53 @@
     transform: scale(0.98);
   }
 
-  /* Arrow pointer (mostly for Safari on iPad/iPhone) */
-  .pwa-prompt-arrow {
-    display: none;
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid var(--pwa-bg);
-    filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+  /* Floating Action Buttons Styles */
+  .pwa-floating-buttons {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 9998;
+  }
+
+  .pwa-float-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--pwa-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--pwa-border);
+    box-shadow: 0 4px 15px var(--pwa-shadow);
+    color: var(--pwa-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s, background-color 0.2s;
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+    text-decoration: none;
+  }
+
+  .pwa-float-btn.show {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  .pwa-float-btn:hover {
+    transform: scale(1.1);
+    background: var(--pwa-primary);
+    color: #fff;
+    border-color: transparent;
+  }
+  
+  .pwa-float-btn:active {
+    transform: scale(0.95);
   }
 
   /* Hide element helper */
@@ -249,61 +301,97 @@
     display: none !important;
   }
 
-  /* Adaptive Arrow for iPhones where the tab bar is at the bottom */
+  /* Adaptive for mobile */
   @media (max-width: 768px) {
     .pwa-prompt {
       bottom: 20px;
+    }
+    .pwa-floating-buttons {
+      bottom: 20px;
+      right: 20px;
+    }
+    .pwa-float-btn {
+      width: 44px;
+      height: 44px;
     }
   }
 </style>
 
 <script is:inline>
   (() => {
-    // Prevent execution during build
     if (typeof window === 'undefined') return;
 
-    // Wait for DOM to load
-    document.addEventListener('DOMContentLoaded', () => {
+    const initPWA = () => {
       const promptEl = document.getElementById('pwa-install-prompt');
       const closeBtn = document.getElementById('pwa-close-btn');
       const iosGuide = document.getElementById('pwa-ios-guide');
       const androidGuide = document.getElementById('pwa-android-guide');
       const installBtn = document.getElementById('pwa-install-btn');
       const appNameEl = document.getElementById('pwa-app-name');
+      const homeBtn = document.getElementById('pwa-home-btn');
+      const topBtn = document.getElementById('pwa-top-btn');
 
+      // --- 1. Floating Buttons Logic ---
+      if (topBtn) {
+        const handleScroll = () => {
+          if (window.scrollY > 300) {
+            topBtn.classList.remove('hidden');
+            // Trigger reflow
+            void topBtn.offsetWidth;
+            topBtn.classList.add('show');
+          } else {
+            topBtn.classList.remove('show');
+          }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        
+        topBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      if (homeBtn) {
+        // Show home button if not on home page
+        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
+        if (!isHomePage) {
+          homeBtn.classList.remove('hidden');
+          void homeBtn.offsetWidth;
+          homeBtn.classList.add('show');
+        } else {
+          homeBtn.classList.remove('show');
+        }
+      }
+
+      // --- 2. Install Prompt Logic ---
       if (!promptEl) return;
 
-      // Update app name from page title if needed
       const siteTitle = document.title ? document.title.split(' - ')[0].split(' | ')[0] : 'sofamap';
       if (appNameEl) {
         appNameEl.textContent = siteTitle;
       }
 
-      // Check if already dismissed within last 7 days
       const dismissedTime = localStorage.getItem('pwa-prompt-dismissed');
       if (dismissedTime) {
         const now = Date.now();
         const diff = now - parseInt(dismissedTime, 10);
         const sevenDays = 7 * 24 * 60 * 60 * 1000;
         if (diff < sevenDays) {
-          return; // Don't show
+          return; 
         }
       }
 
-      // Check device details
       const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       const isStandalone = window.navigator.standalone === true || 
                           window.matchMedia('(display-mode: standalone)').matches;
 
-      // If already installed (standalone mode), do not show
       if (isStandalone) {
         return;
       }
 
       let deferredPrompt = null;
 
-      // Dismiss handler
       const dismissPrompt = () => {
         promptEl.classList.remove('show');
         setTimeout(() => {
@@ -312,29 +400,24 @@
         localStorage.setItem('pwa-prompt-dismissed', Date.now().toString());
       };
 
-      closeBtn.addEventListener('click', dismissPrompt);
+      if (closeBtn) {
+        closeBtn.addEventListener('click', dismissPrompt);
+      }
 
-      // Handle iOS Safari Installation Guide
       if (isiOS) {
-        iosGuide.classList.remove('hidden');
-        // Show iOS prompt with a slight delay
+        if (iosGuide) iosGuide.classList.remove('hidden');
         setTimeout(() => {
           promptEl.classList.remove('hidden');
-          // Trigger reflow
           void promptEl.offsetWidth;
           promptEl.classList.add('show');
         }, 2000);
       } else {
-        // Handle Android / Desktop Chrome Installation
         window.addEventListener('beforeinstallprompt', (e) => {
-          // Prevent standard prompt
           e.preventDefault();
           deferredPrompt = e;
 
-          // Show PWA Android layout
-          androidGuide.classList.remove('hidden');
+          if (androidGuide) androidGuide.classList.remove('hidden');
 
-          // Show prompt
           setTimeout(() => {
             promptEl.classList.remove('hidden');
             void promptEl.offsetWidth;
@@ -342,30 +425,23 @@
           }, 2000);
         });
 
-        installBtn.addEventListener('click', async () => {
-          if (!deferredPrompt) return;
-          
-          // Show the browser's install prompt
-          deferredPrompt.prompt();
-          
-          // Wait for the user to respond to the prompt
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log(`PWA install user choice: ${outcome}`);
-          
-          // Clear prompt and dismiss
-          deferredPrompt = null;
-          dismissPrompt();
-        });
-      }
-
-      // Handle custom events for Astro transitions (if ClientRouter is used)
-      document.addEventListener('astro:after-swap', () => {
-        // Ensure standard states are set correctly after page navigation
-        const newPrompt = document.getElementById('pwa-install-prompt');
-        if (newPrompt && !localStorage.getItem('pwa-prompt-dismissed') && !isStandalone) {
-          // Logic can be re-run here if need be, but keeping it inline is safer.
+        if (installBtn) {
+          installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`PWA install user choice: ${outcome}`);
+            deferredPrompt = null;
+            dismissPrompt();
+          });
         }
-      });
-    });
+      }
+    };
+
+    // Load on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', initPWA);
+
+    // Support Astro View Transitions (re-run logic after navigation)
+    document.addEventListener('astro:after-swap', initPWA);
   })();
 </script>
