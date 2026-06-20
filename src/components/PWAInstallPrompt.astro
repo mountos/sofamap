@@ -67,25 +67,25 @@
 
 <style>
   :root {
-    --pwa-bg: rgba(26, 26, 26, 0.75);
-    --pwa-border: rgba(255, 255, 255, 0.1);
+    --pwa-bg: rgba(26, 26, 26, 0.45);
+    --pwa-border: rgba(255, 255, 255, 0.08);
     --pwa-text: #f3f4f6;
     --pwa-subtext: #9ca3af;
     --pwa-primary: #18181b;
     --pwa-primary-hover: #2563eb;
-    --pwa-shadow: rgba(0, 0, 0, 0.4);
+    --pwa-shadow: rgba(0, 0, 0, 0.3);
   }
 
   /* Support Light Mode if parent theme supports it */
   @media (prefers-color-scheme: light) {
     :root {
-      --pwa-bg: rgba(255, 255, 255, 0.8);
-      --pwa-border: rgba(0, 0, 0, 0.08);
+      --pwa-bg: rgba(255, 255, 255, 0.5);
+      --pwa-border: rgba(0, 0, 0, 0.06);
       --pwa-text: #1f2937;
       --pwa-subtext: #4b5563;
       --pwa-primary: #2563eb;
       --pwa-primary-hover: #1d4ed8;
-      --pwa-shadow: rgba(0, 0, 0, 0.1);
+      --pwa-shadow: rgba(0, 0, 0, 0.08);
     }
   }
 
@@ -285,11 +285,21 @@
     pointer-events: auto;
   }
 
+  .pwa-float-btn svg {
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+  }
+
   .pwa-float-btn:hover {
     transform: scale(1.1);
     background: var(--pwa-primary);
     color: #fff;
     border-color: transparent;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .pwa-float-btn:hover svg {
+    opacity: 1;
   }
   
   .pwa-float-btn:active {
