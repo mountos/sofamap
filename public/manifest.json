@@ -1,32 +1,18 @@
 {
-  "lang": "en",
-  "dir": "ltr",
-  "name": "blackspike astro landing page",
-  "description": "A free Astro landing theme made with Tailwind to help kick start your Astro website.",
-  "short_name": "blackspike astro theme",
-  "theme_color": "#18181B",
+  "name": "SOFA MAP 沙發地圖",
+  "short_name": "SOFA MAP 沙發地圖",
+  "description": "你的 居家全球漫遊平台！我們正在努力打造一個革命性的虛擬探索平台，讓「旅行」不再受限於時間與空間。坐在您最舒適的沙發裡，準備好探索全球每一個角落。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#18181b",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/512.png",
+      "src": "/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }

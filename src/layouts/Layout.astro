@@ -15,6 +15,7 @@ import global_settings from "../data/global_settings.json"
 
 import DialogModal from "../components/DialogModal.astro"
 import FooterMain from "../components/FooterMain.astro"
+import PWAInstallPrompt from "../components/PWAInstallPrompt.astro"
 import HeaderMain from "../components/HeaderMain.astro"
 
 const { title, description } = Astro.props
@@ -46,6 +47,23 @@ const { title, description } = Astro.props
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-inter-display" preload />
 
+    <!-- PWA iOS Optimization & Service Worker -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content={ title ?? global_settings.title } />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+
+    <!-- Register Service Worker -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('PWA Service Worker registered:', reg.scope))
+            .catch(err => console.error('PWA Service Worker registration failed:', err));
+        });
+      }
+    </script>
   </head>
 
   <body id="top">
@@ -66,6 +84,7 @@ const { title, description } = Astro.props
 
     <!-- Footer -->
     <FooterMain settings={ global_settings } />
+    <PWAInstallPrompt />
 
     <!-- Demo dialog modal -->
     <DialogModal id="demo" content={ global_settings.demo }>

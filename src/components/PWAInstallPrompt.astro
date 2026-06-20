@@ -1,0 +1,371 @@
+---
+// PWAInstallPrompt.astro
+// A premium glassmorphism A2HS prompt component for PWA installation
+---
+
+<div id="pwa-install-prompt" class="pwa-prompt hidden">
+  <div class="pwa-prompt-content">
+    <div class="pwa-prompt-header">
+      <div class="pwa-app-icon">
+        <img src="/favicon.png" alt="App Icon" />
+      </div>
+      <div class="pwa-app-info">
+        <h4 id="pwa-app-name">sofamap</h4>
+        <p>將此網站新增至手機主畫面，享有更流暢的原生 APP 體驗與離線瀏覽功能。</p>
+      </div>
+      <button id="pwa-close-btn" class="pwa-close" aria-label="Close prompt">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="pwa-prompt-body">
+      <!-- iOS Install Guide -->
+      <div id="pwa-ios-guide" class="hidden">
+        <div class="ios-instruction">
+          <span>請點擊瀏覽器下方的分享按鈕</span>
+          <span class="ios-icon-wrapper">
+            <svg class="ios-share-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path d="M12 2v11M9 5l3-3 3 3" />
+            </svg>
+          </span>
+          <span>，然後選擇<strong>「加入主畫面」</strong>。</span>
+        </div>
+      </div>
+
+      <!-- Android / Chrome Install Button -->
+      <div id="pwa-android-guide" class="hidden">
+        <button id="pwa-install-btn" class="pwa-btn-primary">
+          安裝為 App
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="pwa-prompt-arrow"></div>
+</div>
+
+<style>
+  :root {
+    --pwa-bg: rgba(26, 26, 26, 0.75);
+    --pwa-border: rgba(255, 255, 255, 0.1);
+    --pwa-text: #f3f4f6;
+    --pwa-subtext: #9ca3af;
+    --pwa-primary: #18181b;
+    --pwa-primary-hover: #2563eb;
+    --pwa-shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  /* Support Light Mode if parent theme supports it */
+  @media (prefers-color-scheme: light) {
+    :root {
+      --pwa-bg: rgba(255, 255, 255, 0.8);
+      --pwa-border: rgba(0, 0, 0, 0.08);
+      --pwa-text: #1f2937;
+      --pwa-subtext: #4b5563;
+      --pwa-primary: #2563eb;
+      --pwa-primary-hover: #1d4ed8;
+      --pwa-shadow: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .pwa-prompt {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    width: calc(100% - 32px);
+    max-width: 420px;
+    z-index: 9999;
+    background: var(--pwa-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--pwa-border);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px -5px var(--pwa-shadow), 0 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    padding: 16px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .pwa-prompt.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .pwa-prompt.hidden {
+    display: none;
+  }
+
+  .pwa-prompt-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pwa-prompt-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+  }
+
+  .pwa-app-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pwa-app-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pwa-app-info {
+    flex-grow: 1;
+    padding-right: 24px;
+  }
+
+  .pwa-app-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pwa-text);
+  }
+
+  .pwa-app-info p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--pwa-subtext);
+  }
+
+  .pwa-close {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--pwa-subtext);
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .pwa-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--pwa-text);
+  }
+
+  .pwa-prompt-body {
+    border-top: 1px solid var(--pwa-border);
+    padding-top: 12px;
+  }
+
+  /* iOS specific styles */
+  .ios-instruction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--pwa-text);
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .ios-icon-wrapper {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    vertical-align: middle;
+  }
+
+  .ios-share-icon {
+    color: var(--pwa-primary);
+  }
+
+  /* Android Button */
+  .pwa-btn-primary {
+    width: 100%;
+    background: var(--pwa-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  }
+
+  .pwa-btn-primary:hover {
+    background: var(--pwa-primary-hover);
+  }
+
+  .pwa-btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  /* Arrow pointer (mostly for Safari on iPad/iPhone) */
+  .pwa-prompt-arrow {
+    display: none;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid var(--pwa-bg);
+    filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+  }
+
+  /* Hide element helper */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Adaptive Arrow for iPhones where the tab bar is at the bottom */
+  @media (max-width: 768px) {
+    .pwa-prompt {
+      bottom: 20px;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    // Prevent execution during build
+    if (typeof window === 'undefined') return;
+
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', () => {
+      const promptEl = document.getElementById('pwa-install-prompt');
+      const closeBtn = document.getElementById('pwa-close-btn');
+      const iosGuide = document.getElementById('pwa-ios-guide');
+      const androidGuide = document.getElementById('pwa-android-guide');
+      const installBtn = document.getElementById('pwa-install-btn');
+      const appNameEl = document.getElementById('pwa-app-name');
+
+      if (!promptEl) return;
+
+      // Update app name from page title if needed
+      const siteTitle = document.title ? document.title.split(' - ')[0].split(' | ')[0] : 'sofamap';
+      if (appNameEl) {
+        appNameEl.textContent = siteTitle;
+      }
+
+      // Check if already dismissed within last 7 days
+      const dismissedTime = localStorage.getItem('pwa-prompt-dismissed');
+      if (dismissedTime) {
+        const now = Date.now();
+        const diff = now - parseInt(dismissedTime, 10);
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        if (diff < sevenDays) {
+          return; // Don't show
+        }
+      }
+
+      // Check device details
+      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isStandalone = window.navigator.standalone === true || 
+                          window.matchMedia('(display-mode: standalone)').matches;
+
+      // If already installed (standalone mode), do not show
+      if (isStandalone) {
+        return;
+      }
+
+      let deferredPrompt = null;
+
+      // Dismiss handler
+      const dismissPrompt = () => {
+        promptEl.classList.remove('show');
+        setTimeout(() => {
+          promptEl.classList.add('hidden');
+        }, 400);
+        localStorage.setItem('pwa-prompt-dismissed', Date.now().toString());
+      };
+
+      closeBtn.addEventListener('click', dismissPrompt);
+
+      // Handle iOS Safari Installation Guide
+      if (isiOS) {
+        iosGuide.classList.remove('hidden');
+        // Show iOS prompt with a slight delay
+        setTimeout(() => {
+          promptEl.classList.remove('hidden');
+          // Trigger reflow
+          void promptEl.offsetWidth;
+          promptEl.classList.add('show');
+        }, 2000);
+      } else {
+        // Handle Android / Desktop Chrome Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+          // Prevent standard prompt
+          e.preventDefault();
+          deferredPrompt = e;
+
+          // Show PWA Android layout
+          androidGuide.classList.remove('hidden');
+
+          // Show prompt
+          setTimeout(() => {
+            promptEl.classList.remove('hidden');
+            void promptEl.offsetWidth;
+            promptEl.classList.add('show');
+          }, 2000);
+        });
+
+        installBtn.addEventListener('click', async () => {
+          if (!deferredPrompt) return;
+          
+          // Show the browser's install prompt
+          deferredPrompt.prompt();
+          
+          // Wait for the user to respond to the prompt
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`PWA install user choice: ${outcome}`);
+          
+          // Clear prompt and dismiss
+          deferredPrompt = null;
+          dismissPrompt();
+        });
+      }
+
+      // Handle custom events for Astro transitions (if ClientRouter is used)
+      document.addEventListener('astro:after-swap', () => {
+        // Ensure standard states are set correctly after page navigation
+        const newPrompt = document.getElementById('pwa-install-prompt');
+        if (newPrompt && !localStorage.getItem('pwa-prompt-dismissed') && !isStandalone) {
+          // Logic can be re-run here if need be, but keeping it inline is safer.
+        }
+      });
+    });
+  })();
+</script>
