@@ -37,7 +37,7 @@ const { title, description } = Astro.props
     <meta name="description" content={ description ?? global_settings.description } />
     <meta name="theme-color" content={ global_settings.theme_color } />
 
-    <meta property="og:title" content={ title ?? global_settings.title } />
+    <meta property="og:title" content={(title ?? global_settings.title).includes('|') ? (title ?? global_settings.title).split('|')[0].trim() : ((title ?? global_settings.title).includes('-') ? (title ?? global_settings.title).split('-')[0].trim() : (title ?? global_settings.title))} />
     <meta property="og:description" content={ description ?? global_settings.description } />
     <meta
       property="og:image"
