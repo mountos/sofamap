@@ -1,0 +1,85 @@
+---
+
+import Layout from "../../layouts/Layout.astro"
+
+import CaseStudiesSection from "../../components/CaseStudiesSection.astro"
+import ClientsSection from "../../components/ClientsSection.astro"
+import FaqSection from "../../components/FaqSection.astro"
+import ServicesCarousel from "../../components/ServicesCarousel.astro"
+import HeroSection from "../../components/HeroSection.astro"
+import NewsletterSection from "../../components/NewsletterSection.astro"
+import PricingSection from "../../components/PricingSection.astro"
+import QuoteSection from "../../components/QuoteSection.astro"
+import TestimonialsSection from "../../components/TestimonialsSection.astro"
+
+import caseStudies_orig from "../../data/case_studies.json"
+import clients_orig from "../../data/clients.json"
+import faq_orig from "../../data/faq.json"
+import services_orig from "../../data/services.json"
+import home_orig from "../../data/home.json"
+import pricing_orig from "../../data/pricing.json"
+import global_settings_orig from "../../data/global_settings.json"
+import newsletter_orig from "../../data/newsletter.json"
+import testimonials_orig from "../../data/testimonials.json"
+import { toSimplifiedObj } from '../../utils/cc';
+const caseStudies = toSimplifiedObj(caseStudies_orig);
+const clients = toSimplifiedObj(clients_orig);
+const faq = toSimplifiedObj(faq_orig);
+const services = toSimplifiedObj(services_orig);
+const home = toSimplifiedObj(home_orig);
+const pricing = toSimplifiedObj(pricing_orig);
+const global_settings = toSimplifiedObj(global_settings_orig);
+const newsletter = toSimplifiedObj(newsletter_orig);
+const testimonials = toSimplifiedObj(testimonials_orig);
+
+
+---
+
+<Layout title={ global_settings.title } settings={ global_settings }>
+
+  <HeroSection
+    content={ home.hero_content }
+    settings={ global_settings }
+    title={ home.hero_title }
+  />
+
+  <ServicesCarousel
+    services={ services }
+    title={ home.services_title }
+  />
+
+  <ClientsSection
+    clients={ clients }
+    title={ home.clients_title }
+  />
+
+  <QuoteSection
+    cite={ home.quote_cite }
+    content={ home.quote_content }
+    image={ home.quote_image }
+    role={ home.quote_role }
+  />
+
+  <CaseStudiesSection
+    caseStudies={ caseStudies }
+    title={ home.case_studies_title }
+  />
+
+  <TestimonialsSection
+    testimonials={ testimonials }
+    title={ home.testimonials_title }
+  />
+
+  <PricingSection
+    pricing={ pricing }
+    title={ home.pricing_title }
+  />
+
+  <FaqSection
+    faq={ faq }
+    title={ home.faq_title }
+  />
+
+  <NewsletterSection newsletter={newsletter} />
+
+</Layout>

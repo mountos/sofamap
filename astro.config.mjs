@@ -3,6 +3,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   site: 'https://sofamap.com',
+  i18n: {
+    defaultLocale: 'zh-tw',
+    locales: ['zh-tw', 'zh-cn'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   vite: {
     plugins: [tailwindcss()]
   },

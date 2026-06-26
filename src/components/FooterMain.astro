@@ -3,6 +3,8 @@
 import Logo from '../assets/theme-images/logo.svg'
 
 const { settings } = Astro.props
+const lang = Astro.url.pathname.startsWith('/zh-cn') ? 'zh-cn' : 'zh-tw';
+
 
 ---
 
@@ -74,7 +76,13 @@ const { settings } = Astro.props
         <a href="https://blackspike.com/">by blackspike.com</a>
 
         <!-- Credits -->
-        <a href="/credits">about / credits</a>
+        {lang === "zh-cn" ? <a href="/zh-cn/credits">关于 / 致谢</a> : <a href="/credits">about / credits</a>}
+
+            <span class="text-gray-500">|</span>
+            <a href="/" class={lang === 'zh-tw' ? 'font-bold' : ''}>繁體中文</a>
+            <span class="text-gray-500">|</span>
+            <a href="/zh-cn/" class={lang === 'zh-cn' ? 'font-bold' : ''}>简体中文</a>
+            
 
       </nav>
 

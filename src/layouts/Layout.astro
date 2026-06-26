@@ -18,30 +18,32 @@ import FooterMain from "../components/FooterMain.astro"
 import PWAInstallPrompt from "../components/PWAInstallPrompt.astro"
 import HeaderMain from "../components/HeaderMain.astro"
 
-const { title, description } = Astro.props
+const { title, description, settings = global_settings } = Astro.props
+const lang = Astro.url.pathname.startsWith('/zh-cn') ? 'zh-cn' : 'zh-tw';
+
 
 ---
 
-<html lang="en">
+<html lang={lang}>
 
   <head>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
 
-    <title>{ title ?? global_settings.title }</title>
+    <title>{ title ?? settings.title }</title>
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
 
-    <meta name="description" content={ description ?? global_settings.description } />
-    <meta name="theme-color" content={ global_settings.theme_color } />
+    <meta name="description" content={ description ?? settings.description } />
+    <meta name="theme-color" content={ settings.theme_color } />
 
-    <meta property="og:title" content={(title ?? global_settings.title).includes('|') ? (title ?? global_settings.title).split('|')[0].trim() : ((title ?? global_settings.title).includes('-') ? (title ?? global_settings.title).split('-')[0].trim() : (title ?? global_settings.title))} />
-    <meta property="og:description" content={ description ?? global_settings.description } />
+    <meta property="og:title" content={(title ?? settings.title).includes('|') ? (title ?? settings.title).split('|')[0].trim() : ((title ?? settings.title).includes('-') ? (title ?? settings.title).split('-')[0].trim() : (title ?? settings.title))} />
+    <meta property="og:description" content={ description ?? settings.description } />
     <meta
       property="og:image"
-      content={ global_settings.base_url + global_settings.social_image }
+      content={ settings.base_url + settings.social_image }
     />
 
     <Font cssVariable="--font-inter" preload />
@@ -51,7 +53,7 @@ const { title, description } = Astro.props
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content={ title ?? global_settings.title } />
+    <meta name="apple-mobile-web-app-title" content={ title ?? settings.title } />
     <link rel="apple-touch-icon" href="/favicon.png" />
 
     <!-- Register Service Worker -->
@@ -87,7 +89,7 @@ const { title, description } = Astro.props
     <PWAInstallPrompt />
 
     <!-- Demo dialog modal -->
-    <DialogModal id="demo" content={ global_settings.demo }>
+    <DialogModal id="demo" content={ settings.demo }>
 
   </body>
 </html>
