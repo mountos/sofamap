@@ -1,96 +1,53 @@
 ---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SEO from '../components/SEO.astro';
+import PWAInstallPrompt from '../components/PWAInstallPrompt.astro';
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
 
-import '../assets/css/global.css'
-import "../assets/css/base.css"
-import "../assets/css/typography.css"
-import "../assets/css/layout.css"
-import "../assets/css/buttons.css"
+interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+	type?: 'website' | 'article';
+	article?: {
+		publishedTime: string;
+		modifiedTime?: string;
+		tags?: string[];
+		author?: string;
+	};
+}
 
-import { Font } from 'astro:assets';
+const { 
+	title = 'Astro Pu', 
+	description = '開啟你的 AI 搜尋優化時代。',
+	image,
+	type,
+	article
+} = Astro.props;
 
-import Image from "astro/components/Image.astro"
-import bg_image from "../assets/theme-images/hero-image.jpg"
-
-import global_settings from "../data/global_settings.json"
-
-import DialogModal from "../components/DialogModal.astro"
-import FooterMain from "../components/FooterMain.astro"
-import PWAInstallPrompt from "../components/PWAInstallPrompt.astro"
-import HeaderMain from "../components/HeaderMain.astro"
-
-const { title, description, settings = global_settings } = Astro.props
-const lang = Astro.url.pathname.startsWith('/zh-cn') ? 'zh-cn' : 'zh-tw';
-
-
+const isHomepage = Astro.url.pathname === '/';
 ---
-
-<html lang={lang}>
-
-  <head>
-
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-
-    <title>{ title ?? settings.title }</title>
-
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="manifest" href="/manifest.json" />
-
-    <meta name="description" content={ description ?? settings.description } />
-    <meta name="theme-color" content={ settings.theme_color } />
-
-    <meta property="og:title" content={(title ?? settings.title).includes('|') ? (title ?? settings.title).split('|')[0].trim() : ((title ?? settings.title).includes('-') ? (title ?? settings.title).split('-')[0].trim() : (title ?? settings.title))} />
-    <meta property="og:description" content={ description ?? settings.description } />
-    <meta
-      property="og:image"
-      content={ settings.base_url + settings.social_image }
-    />
-
-    <Font cssVariable="--font-inter" preload />
-    <Font cssVariable="--font-inter-display" preload />
-
-    <!-- PWA iOS Optimization & Service Worker -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content={ title ?? settings.title } />
-    <link rel="apple-touch-icon" href="/favicon.png" />
-
-    <!-- Register Service Worker -->
-    <script is:inline>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('PWA Service Worker registered:', reg.scope))
-            .catch(err => console.error('PWA Service Worker registration failed:', err));
-        });
-      }
-    </script>
-  </head>
-
-  <body id="top">
-
-    <!-- Skip link -->
-    <a class="fixed -top-20 focus-visible:top-0 p-3 bg-black/90 transition-all duration-300" href="#main">Skip to content</a>
-
-    <!-- bg image -->
-    <Image src={ bg_image } alt="" format="avif" height={1080} width={1920} class="absolute min-h-svh object-cover inset-0 bottom-auto -z-1 w-full h-auto opacity-20 mask-b-from-50%" loading="eager" />
-
-    <!-- Header -->
-    <HeaderMain settings={ global_settings } />
-
-    <!-- Main slot -->
-    <main id="main">
-      <slot />
-    </main>
-
-    <!-- Footer -->
-    <FooterMain settings={ global_settings } />
-    <PWAInstallPrompt />
-
-    <!-- Demo dialog modal -->
-    <DialogModal id="demo" content={ settings.demo } />
-
-  </body>
+<!doctype html>
+<html lang="en">
+	<head>
+		<SEO 
+			title={title} 
+			description={description} 
+			image={image} 
+			type={type} 
+			article={article} 
+		/>
+		<ClientRouter />
+	</head>
+	<body>
+		<Header isHomepage={isHomepage} />
+		<slot name="hero" />
+		<main class="main-content">
+			<slot />
+		</main>
+		<Footer />
+		<PWAInstallPrompt />
+	</body>
 </html>
-

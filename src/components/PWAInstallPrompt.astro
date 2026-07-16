@@ -10,7 +10,7 @@
         <img src="/favicon.png" alt="App Icon" />
       </div>
       <div class="pwa-app-info">
-        <h4 id="pwa-app-name">sofamap</h4>
+        <h4 id="pwa-app-name">Astro Pu</h4>
         <p>將此網站新增至手機主畫面，享有更流暢的原生 APP 體驗與離線瀏覽功能。</p>
       </div>
       <button id="pwa-close-btn" class="pwa-close" aria-label="Close prompt">
@@ -71,7 +71,7 @@
     --pwa-border: rgba(255, 255, 255, 0.08);
     --pwa-text: #f3f4f6;
     --pwa-subtext: #9ca3af;
-    --pwa-primary: #18181b;
+    --pwa-primary: #3b82f6;
     --pwa-primary-hover: #2563eb;
     --pwa-shadow: rgba(0, 0, 0, 0.3);
     --pwa-icon-bg: #ffffff;
@@ -378,7 +378,7 @@
       // --- 2. Install Prompt Logic ---
       if (!promptEl) return;
 
-      const siteTitle = document.title ? document.title.split(' - ')[0].split(' | ')[0] : 'sofamap';
+      const siteTitle = document.title ? document.title.split(' - ')[0].split(' | ')[0] : 'Astro Pu';
       if (appNameEl) {
         appNameEl.textContent = siteTitle;
       }

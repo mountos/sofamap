@@ -1,5 +1,5 @@
 # Best practice version combining Cloudflare AI protection and SEO Sitemap
-#
+
 # BEGIN AI and Bot Protection Rules (originally by Cloudflare)
 
 User-Agent: *
@@ -33,4 +33,4 @@ Disallow: /
 # END AI and Bot Protection Rules
 
 # Sitemap location for search engines
-Sitemap: https://sofamap.com/sitemap-index.xml
+Sitemap: https://pu.code.mountos.com/sitemap-index.xml

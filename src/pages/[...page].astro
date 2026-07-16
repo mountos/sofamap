@@ -1,0 +1,85 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import Pagination from "../components/Pagination.astro";
+import Intro from "../components/Intro.astro";
+import type { Page } from "astro";
+
+export async function getStaticPaths({ paginate }) {
+  const allPosts = (await getCollection("blog")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  );
+  return paginate(allPosts, { pageSize: 10 });
+}
+
+interface Props {
+  page: Page;
+}
+
+const { page } = Astro.props;
+
+const pageTitle = "Astro Pu  璞";
+const pageDescription = `The latest news from Mountos Institute${
+  page.currentPage > 1 ? ` | Page ${page.currentPage}` : ""
+}`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  {page.currentPage === 1 && <Intro slot="hero" />}
+  <section class="post-list">
+    <h2>Latest Posts</h2>
+    <ul>
+      {
+        page.data.map((post) => (
+          <li>
+            <a href={`/blog/${post.id.replace(/\.mdx?$/, '')}/`}>
+              <span class="post-title">{post.data.title}</span>
+              <span class="post-date">
+                {post.data.pubDate.toLocaleDateString("en-US")}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Pagination page={page} />
+</Layout>
+
+<style>
+  .post-list h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+  }
+  .post-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .post-list li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s ease;
+    margin-bottom: 0.5rem;
+  }
+  .post-list li a:hover {
+    background-color: var(--color-primary-light);
+  }
+  .post-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  .post-date {
+    font-size: 0.9rem;
+    color: #888;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

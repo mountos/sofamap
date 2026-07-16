@@ -1,0 +1,47 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Search | Astro Pu 璞">
+  <main>
+    <div id="search" class="search-container"></div>
+  </main>
+  <style>
+    .search-container {
+      padding: 2rem 1rem;
+    }
+  </style>
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        new PagefindUI({
+          element: "#search",
+          showSubResults: true,
+          translations: {
+            placeholder: "Search for articles...",
+            clear_search: "Clear",
+            load_more: "Load more results",
+            search_label: "Search this site",
+            filters_label: "Filters",
+            zero_results: "No results for [SEARCH_TERM]",
+            many_results: "[COUNT] results for [SEARCH_TERM]",
+            one_result: "[COUNT] result for [SEARCH_TERM]",
+            alt_search:
+              "No results for [SEARCH_TERM]. Try searching for [DIFFERENT_TERM] instead?",
+            search_suggestion:
+              "No results for [SEARCH_TERM]. Try one of the following searches?",
+            searching: "Searching for [SEARCH_TERM]...",
+          },
+        });
+      } catch (e) {
+        console.error("Failed to load Pagefind UI:", e);
+        const searchContainer = document.querySelector("#search");
+        if (searchContainer) {
+          searchContainer.innerHTML =
+            '<p style="color: red;">Failed to load search functionality. Please try again later.</p>';
+        }
+      }
+    });
+  </script>
+</Layout>

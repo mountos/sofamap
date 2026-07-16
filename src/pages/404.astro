@@ -1,0 +1,77 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="404: Page Not Found | Astro Pu 璞)"
+  description="Sorry, the page you are looking for does not exist. It may have been moved, deleted, or you may have typed the wrong URL."
+>
+  <div class="not-found-container">
+    <div class="icon">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="96"
+        height="96"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M6.5 13a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13m0 1a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15"
+        ></path>
+        <path
+          d="M10.344 11.742c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1A6.5 6.5 0 0 0 13 6.5 6.502 6.502 0 0 0 6.5 0a6.5 6.5 0 1 0 3.844 11.742M6.5 1a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11"
+        ></path>
+        <path
+          d="M5.338 7.168c.26.26.52.506.772.738.25.23.51.45.78.653.268.203.545.39.83.525.286.135.583.21.898.21.315 0 .612-.075.898-.21.285-.135.562-.322.83-.525.27-.203.53-.423.78-.653.252-.232.512-.478.772-.738a.542.542 0 0 0-.012-.765.538.538 0 0 0-.753-.012l-.001.001c-.24.22-.48.428-.714.623-.236.194-.46.35-.67.48-.21.13-.406.212-.58.25-.176.04-.34.05-.48.05s-.304-.01-.48-.05c-.174-.038-.37-.12-.58-.25-.21-.13-.434-.286-.67-.48-.234-.195-.474-.403-.714-.623a.54.54 0 0 0-.753.012.542.542 0 0 0-.012.765Z"
+        ></path>
+      </svg>
+    </div>
+    <h1>404 - Page Not Found</h1>
+    <p>
+      Oops! The page you're looking for might have been moved, deleted, or never
+      existed.
+    </p>
+    <a href="/" class="home-button">Back to Home</a>
+  </div>
+</Layout>
+
+<style>
+  .not-found-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 1.5rem;
+    min-height: 50vh;
+  }
+  .icon {
+    color: #ccc;
+    margin-bottom: 2rem;
+  }
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+  p {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 400px;
+    margin-bottom: 2rem;
+  }
+  .home-button {
+    display: inline-block;
+    padding: 0.8rem 1.8rem;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  .home-button:hover {
+    background-color: #555;
+  }
+</style>

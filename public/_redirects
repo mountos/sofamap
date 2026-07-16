@@ -1,2 +1,33 @@
-_redirects
+# Astro 301 Redirects for Mountos.com
+#
+# [ English Version ]
+# Description:
+# This file is used to tell search engines and browsers that your old URLs have 
+# permanently moved to new ones. This is crucial for preserving your SEO scores.
+#
+# Format:
+# /old-url    /blog/new-url    301
+#
+# Important Notes:
+# 1. Separate the old path, new path, and status code "301" with one or more spaces or tabs.
+# 2. The old path must start with a forward slash "/".
+# 3. Use status code 301 for "Permanent Redirect".
+#
+# -----------------------------------------------------------------------------
+# [ 中文版 ]
+# 說明：
+# 這個檔案用來告訴搜尋引擎和瀏覽器，您的舊文章網址已經永久地搬家到新網址了。
+# 這對於保存您舊網站的 SEO 分數至關重要。
+#
+# 格式：
+# /舊網址路徑    /blog/新網址路徑    301
+#
+# 重要提示：
+# 1. 舊路徑、新路徑和狀態碼「301」之間，請使用一個或多個「空格」或「Tab」隔開。
+# 2. 舊路徑必須以斜線 `/` 開頭。
+# 3. 狀態碼必須是 301，代表「永久轉址」。
+#
+# -----------------------------------------------------------------------------
+# --- Add your redirect rules below | 請在下方加入您的轉址規則 ---
 
+/powered https://mountos.com 301

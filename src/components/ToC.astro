@@ -1,0 +1,55 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+export interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+// Filter to only include h2 and h3 for the ToC
+const filteredHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+---
+<nav class="toc">
+  <h4 class="toc-title">Table of Contents</h4>
+  <ul>
+    {filteredHeadings.map(heading => (
+      <li class={`depth-${heading.depth}`}>
+        <a href={`#${heading.slug}`}>{heading.text}</a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .toc {
+    position: sticky;
+    top: 100px; /* Adjust based on header height */
+  }
+  .toc-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  .toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .toc li {
+    margin-bottom: 0.5rem;
+  }
+  .toc a {
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+  .toc a:hover {
+    color: #000;
+  }
+  .toc .depth-3 {
+    padding-left: 1rem;
+  }
+</style>

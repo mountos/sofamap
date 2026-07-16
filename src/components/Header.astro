@@ -1,0 +1,34 @@
+---
+const { 
+  isHomepage = false,
+	siteTitle = "SOFA MAP 沙發地圖", 
+	siteDescription = "你的 居家全球漫遊平台！"
+} = Astro.props;
+---
+<header>
+  <div class="header-container">
+    <div class="site-branding">
+      <a href="/" class="logo-link">
+        <img src="/images/Mountos-Logo.png" alt="SOFA MAP Logo" class="site-logo" />
+        <div class="site-text">
+          {isHomepage ? (
+            <h1 class="site-title">{siteTitle}</h1>
+          ) : (
+            <div class="site-title">{siteTitle}</div>
+          )}
+          <p class="site-description">{siteDescription}</p>
+        </div>
+      </a>
+    </div>
+    <nav class="nav-buttons">
+      <a href="https://github.com/mountos/" class="nav-link" rel="nofollow">GitHub</a>
+      <a href="https://mountos.com/contact/" class="nav-link">Contact</a>
+      <a href="/search" class="nav-link search-link" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+    </nav>
+  </div>
+</header>

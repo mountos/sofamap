@@ -1,0 +1,273 @@
+---
+/*
+ * Intro Component for Astro PU (Uncarved Jade)
+ * Specifically designed for SEO and a premium "WOW" first impression.
+ * Now supporting a dual-language (EN/ZH) split layout.
+ */
+---
+
+<section class="intro">
+  <div class="intro-container">
+    <div class="intro-badge">Astro Pu 璞</div>
+
+    <div class="intro-grid">
+      <!-- English Section -->
+      <div class="intro-col en">
+        <h1 class="intro-title">
+          The Perfect <span class="accent">Astro</span> Blog Template for Creators
+        </h1>
+        <p class="intro-subtitle">
+          A harmonious balance of speed, aesthetics, and SEO. Built with Astro 6
+          and inspired by oriental design, it helps you build a professional
+          platform quickly and elegantly.
+        </p>
+      </div>
+
+      <!-- Divider (Desktop only) -->
+      <div class="intro-divider"></div>
+
+      <!-- Chinese Section -->
+      <div class="intro-col zh">
+        <h2 class="intro-title-zh">
+          為創作者而生的完美 <span class="accent">Astro</span> 部落格範本
+        </h2>
+        <p class="intro-subtitle">
+          追求速度、美感與 SEO 的極致平衡。基於 Astro 6
+          的高性能與東方美學設計，助您快速且優雅地建立專業平台。
+        </p>
+      </div>
+    </div>
+
+    <div class="intro-features">
+      <span class="feature-item">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
+        </svg>
+        高性能載入 / High Performance
+      </span>
+      <span class="feature-item">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+          ></polygon>
+        </svg>
+        SEO 極優化 / SEO Optimized
+      </span>
+      <span class="feature-item">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line
+            x1="3"
+            y1="9"
+            x2="21"
+            y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        內容分層 / Content Layer
+      </span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    background-color: #fdfcfb;
+    border-bottom: 1px solid #eee;
+    padding: calc(var(--header-height) + 4rem) 1.5rem 3rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+
+  .intro-container {
+    max-width: var(--max-width);
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+  }
+
+  /* Decorative background element */
+  .intro::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(
+      circle,
+      var(--color-primary-soft) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .intro-badge {
+    display: inline-block;
+    background: var(--color-primary-soft);
+    color: var(--color-primary-dark);
+    padding: 0.4rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 3rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-primary-soft);
+  }
+
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    text-align: left;
+  }
+
+  .intro-col {
+    flex: 1;
+  }
+
+  .intro-divider {
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, #e5e7eb, transparent);
+    min-height: 200px;
+  }
+
+  .intro-title,
+  .intro-title-zh {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 1.25rem;
+    color: #111;
+  }
+
+  .intro-title-zh {
+    font-family: inherit;
+    /* For Chinese, slightly different weight feel if needed */
+  }
+
+  .accent {
+    color: var(--color-primary-dark);
+    position: relative;
+    display: inline-block;
+  }
+
+  .accent::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: var(--color-primary-soft);
+    z-index: -1;
+  }
+
+  .intro-subtitle {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #4b5563;
+    margin: 0;
+  }
+
+  .intro-features {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 2.5rem;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 500;
+  }
+
+  .feature-item svg {
+    color: var(--color-primary);
+    opacity: 0.8;
+  }
+
+  /* Responsive Stacking */
+  @media (max-width: 960px) {
+    .intro-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      text-align: center;
+    }
+    .intro-divider {
+      display: none;
+    }
+    .intro-badge {
+      margin-bottom: 2rem;
+    }
+    .intro-title,
+    .intro-title-zh {
+      font-size: 2.25rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .intro {
+      padding: calc(var(--header-height) + 2.5rem) 1rem 2.5rem;
+    }
+    .intro-features {
+      gap: 1.5rem;
+      flex-direction: column;
+      align-items: center;
+    }
+    .intro-title,
+    .intro-title-zh {
+      font-size: 1.85rem;
+    }
+  }
+</style>

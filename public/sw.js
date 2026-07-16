@@ -1,5 +1,5 @@
 // Astro PU PWA Service Worker
-const CACHE_NAME = 'sofamap-cache-v1';
+const CACHE_NAME = 'astro-pu-cache-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/favicon.png',
