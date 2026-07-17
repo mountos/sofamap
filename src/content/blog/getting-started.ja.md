@@ -2,7 +2,7 @@
 title: "Astro テンプレート PU 璞へようこそ"
 description: "これは、このテンプレートの機能を紹介するサンプル記事です。ここでは、Markdown を使用してコンテンツを作成する方法を学ぶことができます。"
 pubDate: 2026-01-05T12:00:00Z
-categories: ["チュートリアル"]
+categories: ["guide"]
 tags: ["Astro", "テンプレート", "Markdown"]
 heroImage: "../../assets/shared/MOUNTOS-Feature-HeroImage.png"
 ---

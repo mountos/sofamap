@@ -2,6 +2,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { categoriesTranslation } from '../../utils/i18n';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -19,10 +20,14 @@ export async function getStaticPaths() {
 
 const { category } = Astro.params;
 const { posts } = Astro.props;
+
+// Determine category display name based on the posts' language
+const firstPostLang = posts.length > 0 ? (posts[0].id.endsWith('.zh-TW.md') ? 'zh-TW' : (posts[0].id.endsWith('.ja.md') ? 'ja' : 'en')) : 'en';
+const categoryDisplayName = (categoriesTranslation[firstPostLang] && categoriesTranslation[firstPostLang][category]) || category;
 ---
-<Layout title={`Category: ${category}`}>
+<Layout title={`Category: ${categoryDisplayName}`}>
   <section class="post-list">
-    <h2>Category: {category}</h2>
+    <h2>Category: {categoryDisplayName}</h2>
     <ul>
       {posts.map(post => (
         <li>

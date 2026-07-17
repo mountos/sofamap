@@ -2,7 +2,7 @@
 title: "Welcome to Astro Template PU 璞"
 description: "This is an example article introducing the features of this template. Here you can learn how to write your content using Markdown."
 pubDate: 2026-01-05T12:00:00Z
-categories: ["Tutorial"]
+categories: ["guide"]
 tags: ["Astro", "Template", "Markdown"]
 heroImage: "../../assets/shared/MOUNTOS-Feature-HeroImage.png"
 ---

@@ -2,7 +2,7 @@
 title: "歡迎使用 Astro 模板 PU 璞"
 description: "這是一篇介紹此模板功能的範例文章。您可以在這裡學習如何使用 Markdown 來撰寫您的內容。"
 pubDate: 2026-01-05T12:00:00Z
-categories: ["教學"]
+categories: ["guide"]
 tags: ["Astro", "模板", "Markdown"]
 heroImage: "../../assets/shared/MOUNTOS-Feature-HeroImage.png"
 ---

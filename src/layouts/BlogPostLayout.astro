@@ -1,10 +1,18 @@
 ---
 import Layout from './Layout.astro';
 import ToC from '../components/ToC.astro';
+import { categoriesTranslation } from '../utils/i18n';
 const { frontmatter, headings } = Astro.props;
 
 const hasHeadings = headings.filter(h => h.depth > 1 && h.depth < 4).length > 0;
 const primaryCategory = frontmatter.categories?.[0];
+
+// Determine language from layout URL or frontmatter properties
+const urlPath = Astro.url.pathname;
+const isZh = urlPath.includes('/zh-TW') || frontmatter.title?.includes('歡迎'); // Simple heuristics for lang
+const isJa = urlPath.includes('/ja') || frontmatter.title?.includes('ようこそ');
+const lang = isZh ? 'zh-TW' : (isJa ? 'ja' : 'en');
+const translatedCategory = (categoriesTranslation[lang] && categoriesTranslation[lang][primaryCategory]) || primaryCategory;
 ---
 <Layout title={`${frontmatter.title}`} description={frontmatter.description}>
 
@@ -16,7 +24,7 @@ const primaryCategory = frontmatter.categories?.[0];
   }
 
   <div class="hero-foreground-content">
-    {primaryCategory && <p class="hero-category">{primaryCategory}</p>}
+    {primaryCategory && <p class="hero-category">{translatedCategory}</p>}
     <h1 class="hero-title">{frontmatter.title}</h1>
   </div>
 

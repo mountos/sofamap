@@ -1,11 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
+import { categoriesTranslation } from '../utils/i18n';
 
 const posts = await getCollection('blog');
 const allCategories = posts.flatMap(post => post.data.categories);
 const uniqueCategories = [...new Set(allCategories)];
 
 const today = new Date();
+
+// Detect lang from URL path to show proper category translation in footer
+const urlPath = Astro.url.pathname;
+const isZh = urlPath.includes('/zh-TW');
+const isJa = urlPath.includes('/ja');
+const lang = isZh ? 'zh-TW' : (isJa ? 'ja' : 'en');
 ---
 <footer>
   <div class="footer-container">
@@ -21,9 +28,10 @@ const today = new Date();
         <div class="footer-menu">
           <h4>Categories</h4>
           <ul>
-            {uniqueCategories.slice(0, 5).map(category => (
-              <li><a href={`/categories/${category}`}>{category}</a></li>
-            ))}
+            {uniqueCategories.slice(0, 5).map(category => {
+              const translated = (categoriesTranslation[lang] && categoriesTranslation[lang][category]) || category;
+              return <li><a href={`/categories/${category}`}>{translated}</a></li>;
+            })}
             {uniqueCategories.length > 5 && <li><a href="/categories">...More</a></li>}
           </ul>
         </div>
