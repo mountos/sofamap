@@ -1,0 +1,178 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout 
+  title="聯絡我們 | SofaMap 沙發地圖"
+  description="與 SofaMap 沙發地圖團隊聯繫，交流旅遊地圖、住宿與地圖經驗。"
+>
+  <div class="static-page">
+    <h1>聯絡我們 (Contact Us)</h1>
+    <div class="content">
+      <p class="intro-greeting">歡迎與 SofaMap 團隊取得聯繫！</p>
+      <p>若您有地圖推薦、住宿心得、合作諮詢或服務建議，歡迎填寫下方表單。</p>
+
+      <form id="contact-form" class="universal-contact-form">
+        <input type="hidden" name="site" value="sofamap.com" />
+        <input type="hidden" name="type" value="general" />
+
+        <div class="form-group">
+          <label for="name">您的姓名 / 寶號 *</label>
+          <input type="text" id="name" name="name" required placeholder="請輸入姓名" />
+        </div>
+
+        <div class="form-group">
+          <label for="email">電子郵件 *</label>
+          <input type="email" id="email" name="email" required placeholder="your.email@example.com" />
+        </div>
+
+        <div class="form-group">
+          <label for="subject">訊息主旨 *</label>
+          <input type="text" id="subject" name="subject" required placeholder="請輸入訊息主旨" />
+        </div>
+
+        <div class="form-group">
+          <label for="message">詳細訊息內容 *</label>
+          <textarea id="message" name="message" rows="6" required placeholder="請寫下您的訊息內容..."></textarea>
+        </div>
+
+        <button type="submit" id="submit-btn" class="submit-button">
+          ✉️ 發送訊息
+        </button>
+
+        <div id="form-response" class="response-message"></div>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contact-form') as HTMLFormElement;
+    const responseElem = document.getElementById('form-response');
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ 發送中...';
+        if (responseElem) responseElem.style.display = 'none';
+
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+
+        try {
+          const res = await fetch('https://mountos.com/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const result = await res.json();
+
+          if (responseElem) {
+            responseElem.style.display = 'block';
+            if (result.success) {
+              responseElem.className = 'response-message success';
+              responseElem.textContent = '✅ ' + result.message;
+              form.reset();
+            } else {
+              responseElem.className = 'response-message error';
+              responseElem.textContent = '❌ ' + (result.error || '傳送失敗，請再試一次。');
+            }
+          }
+        } catch (err) {
+          if (responseElem) {
+            responseElem.style.display = 'block';
+            responseElem.className = 'response-message error';
+            responseElem.textContent = '❌ 網路連線異常，請稍後再試。';
+          }
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '✉️ 發送訊息';
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .static-page {
+    max-width: 680px;
+    margin: auto;
+    padding: 2rem 1rem;
+  }
+  .static-page h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .intro-greeting {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .content p {
+    text-align: center;
+    color: var(--color-text-muted, #666);
+    margin-bottom: 2rem;
+  }
+  .universal-contact-form {
+    background: var(--color-bg-offset, #fcfcfc);
+    border: 1px solid var(--color-border, #eee);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  }
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .submit-button {
+    width: 100%;
+    background-color: var(--color-primary, #111);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .submit-button:hover {
+    opacity: 0.9;
+  }
+  .response-message {
+    margin-top: 1.25rem;
+    padding: 0.9rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    display: none;
+  }
+  .response-message.success {
+    background-color: #e6f4ea;
+    color: #137333;
+  }
+  .response-message.error {
+    background-color: #fce8e6;
+    color: #c5221f;
+  }
+</style>
