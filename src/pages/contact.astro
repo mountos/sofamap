@@ -63,9 +63,9 @@ import Layout from '../layouts/Layout.astro';
         const payload = Object.fromEntries(formData.entries());
 
         try {
-          const res = await fetch('https://mountos.com/api/contact', {
+          const res = await fetch('https://script.google.com/macros/s/AKfycbzyX_hBo19vRFj5yn3WZqTGk4_gN58Y6g0fQH4IOKnZyJm2tGnCp9inNZt-rk1JssoF/exec', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payload)
           });
           const result = await res.json();
