@@ -63,12 +63,24 @@ import Layout from '../layouts/Layout.astro';
         const payload = Object.fromEntries(formData.entries());
 
         
-        // 取得使用者 IP (透過 Cloudflare CDN Trace)
+        // 取得進階分析與防機器人數據
         try {
           const traceRes = await fetch('/cdn-cgi/trace');
           const traceText = await traceRes.text();
           const ipMatch = traceText.match(/ip=(.+)/);
+          const locMatch = traceText.match(/loc=(.+)/);
+          
           if (ipMatch) payload.ip = ipMatch[1].trim();
+          if (locMatch) payload.country = locMatch[1].trim(); // 國家代碼 (如 TW)
+
+          payload.userAgent = navigator.userAgent; // 瀏覽器與系統
+          payload.language = navigator.language; // 語系
+          payload.screen = `${window.screen.width}x${window.screen.height}`; // 螢幕解析度
+          payload.referrer = document.referrer || 'Direct'; // 來源網站
+          payload.url = window.location.href; // 實際填表網址
+          
+          // 防機器人：計算頁面載入到送出花費的秒數
+          payload.timeToSubmit = Math.round(performance.now() / 1000) + 's';
         } catch (e) {}
 
         try {
