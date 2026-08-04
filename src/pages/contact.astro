@@ -62,6 +62,15 @@ import Layout from '../layouts/Layout.astro';
         const formData = new FormData(form);
         const payload = Object.fromEntries(formData.entries());
 
+        
+        // 取得使用者 IP (透過 Cloudflare CDN Trace)
+        try {
+          const traceRes = await fetch('/cdn-cgi/trace');
+          const traceText = await traceRes.text();
+          const ipMatch = traceText.match(/ip=(.+)/);
+          if (ipMatch) payload.ip = ipMatch[1].trim();
+        } catch (e) {}
+
         try {
           const res = await fetch('https://script.google.com/macros/s/AKfycbzyX_hBo19vRFj5yn3WZqTGk4_gN58Y6g0fQH4IOKnZyJm2tGnCp9inNZt-rk1JssoF/exec', {
             method: 'POST',
