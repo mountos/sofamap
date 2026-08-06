@@ -47,7 +47,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function initContactForm() {
     const form = document.getElementById('contact-form') as HTMLFormElement;
     const responseElem = document.getElementById('form-response');
     const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
@@ -114,7 +114,12 @@ import Layout from '../layouts/Layout.astro';
         }
       });
     }
-  });
+  }
+
+  // 支援 Astro View Transitions（ClientRouter）
+  document.addEventListener('astro:page-load', initContactForm);
+  // 也支援直接進入頁面（無 View Transitions 的情況）
+  document.addEventListener('DOMContentLoaded', initContactForm);
 </script>
 
 <style>
