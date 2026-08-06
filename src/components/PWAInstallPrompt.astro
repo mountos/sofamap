@@ -452,6 +452,7 @@
 
     // Load on DOMContentLoaded
     document.addEventListener('DOMContentLoaded', initPWA);
+    document.addEventListener('astro:page-load', initPWA);
 
     // Support Astro View Transitions (re-run logic after navigation)
     document.addEventListener('astro:after-swap', initPWA);

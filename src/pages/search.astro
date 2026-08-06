@@ -13,7 +13,7 @@ import Layout from "../layouts/Layout.astro";
   </style>
   <script is:inline src="/pagefind/pagefind-ui.js"></script>
   <script is:inline>
-    document.addEventListener("DOMContentLoaded", () => {
+    function initSearch() {
       try {
         new PagefindUI({
           element: "#search",
@@ -42,6 +42,9 @@ import Layout from "../layouts/Layout.astro";
             '<p style="color: red;">Failed to load search functionality. Please try again later.</p>';
         }
       }
-    });
-  </script>
+    }
+
+  document.addEventListener('astro:page-load', initSearch);
+  document.addEventListener('DOMContentLoaded', initSearch);
+</script>
 </Layout>
