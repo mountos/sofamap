@@ -17,5 +17,21 @@ export const onRequest = async (context) => {
   }
 
   // 不是需要轉址的狀況，則繼續交由 Cloudflare Pages 原本流程處理
-  return context.next();
+  const response = await context.next();
+
+  // 針對 HTML 頁面及非靜態副檔名請求，設定 Cloudflare CDN 邊緣快取標頭 (2 小時)
+  if (!hasExtension && response.status === 200) {
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set(
+      'Cache-Control',
+      'public, max-age=600, s-maxage=7200, stale-while-revalidate=86400'
+    );
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders,
+    });
+  }
+
+  return response;
 };
