@@ -40,6 +40,18 @@ const isHomepage = Astro.url.pathname === '/';
 			article={article} 
 		/>
 		<ClientRouter />
+			<script is:inline>
+			(function() {
+				var pathname = window.location.pathname;
+				var lastSegment = pathname.split('/').pop();
+				if (!lastSegment || !lastSegment.includes('.')) {
+					var lowerPath = pathname.toLowerCase();
+					if (pathname !== lowerPath) {
+						window.location.replace(lowerPath + window.location.search + window.location.hash);
+					}
+				}
+			})();
+		</script>
 	</head>
 	<body>
 		<Header isHomepage={isHomepage} />
