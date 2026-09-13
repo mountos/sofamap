@@ -11,40 +11,130 @@ import Layout from "../layouts/Layout.astro";
       padding: 2rem 1rem;
     }
   </style>
-  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  
   <script is:inline>
-    function initSearch() {
-      try {
-        new PagefindUI({
-          element: "#search",
-          showSubResults: true,
-          translations: {
-            placeholder: "Search for articles...",
-            clear_search: "Clear",
-            load_more: "Load more results",
-            search_label: "Search this site",
-            filters_label: "Filters",
-            zero_results: "No results for [SEARCH_TERM]",
-            many_results: "[COUNT] results for [SEARCH_TERM]",
-            one_result: "[COUNT] result for [SEARCH_TERM]",
-            alt_search:
-              "No results for [SEARCH_TERM]. Try searching for [DIFFERENT_TERM] instead?",
-            search_suggestion:
-              "No results for [SEARCH_TERM]. Try one of the following searches?",
-            searching: "Searching for [SEARCH_TERM]...",
-          },
-        });
-      } catch (e) {
-        console.error("Failed to load Pagefind UI:", e);
-        const searchContainer = document.querySelector("#search");
-        if (searchContainer) {
-          searchContainer.innerHTML =
-            '<p style="color: red;">Failed to load search functionality. Please try again later.</p>';
+    function initCustomSearch() {
+      const container = document.querySelector("#search");
+      if (!container || container._initialized) return;
+      container._initialized = true;
+
+      const path = window.location.pathname;
+      let lang = 'zh';
+      if (path.includes('/ja/')) lang = 'ja';
+      if (path.includes('/en/')) lang = 'en';
+      
+      const t = {
+        zh: { placeholder: "搜尋文章...", noResults: "找不到與 \"{query}\" 相關的結果", found: "找到 {count} 篇關於 \"{query}\" 的文章" },
+        en: { placeholder: "Search articles...", noResults: "No results found for \"{query}\"", found: "Found {count} results for \"{query}\"" },
+        ja: { placeholder: "記事を検索...", noResults: "\"{query}\" に関する結果が見つかりません", found: "\"{query}\" に関する記事が {count} 件見つかりました" }
+      }[lang];
+
+      container.innerHTML = `
+        <div class="search-input-wrapper" style="position: relative; margin-bottom: 2rem;">
+          <input type="text" id="custom-search-input" placeholder="${t.placeholder}" autocomplete="off" style="width: 100%; padding: 1rem 1.5rem; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border, #ccc); background: var(--bg-card, #fff); color: var(--text, #333);">
+          <div id="search-status" style="margin-top: 1rem; color: var(--text-muted, #666); text-align: center;"></div>
+        </div>
+        <div id="custom-search-results"></div>
+      `;
+
+      const input = document.getElementById('custom-search-input');
+      const resultsContainer = document.getElementById('custom-search-results');
+      const statusContainer = document.getElementById('search-status');
+
+      let searchIndex = null;
+      let isLoading = false;
+      let timeoutId = null;
+
+      const loadIndex = async () => {
+        if (searchIndex || isLoading) return;
+        isLoading = true;
+        try {
+          const res = await fetch('/search-index.json');
+          const data = await res.json();
+          searchIndex = data.filter(item => {
+            if (!item.lang) return true;
+            return item.lang === lang;
+          });
+        } catch (e) {
+          console.error("Failed to load search index", e);
+        } finally {
+          isLoading = false;
+          if (input.value.trim()) performSearch(input.value.trim());
         }
-      }
+      };
+
+      const highlight = (text, query) => {
+        if (!query || !text) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<mark style="background: var(--primary-soft, #e6f2ff); color: var(--primary, #0066cc); padding: 0 0.2em; border-radius: 4px;">$1</mark>');
+      };
+
+      const performSearch = (query) => {
+        if (!query) {
+          resultsContainer.innerHTML = '';
+          statusContainer.innerHTML = '';
+          return;
+        }
+        if (!searchIndex) {
+          loadIndex();
+          return;
+        }
+
+        const queryLower = query.toLowerCase();
+        const results = searchIndex.filter(item => 
+          (item.title && item.title.toLowerCase().includes(queryLower)) ||
+          (item.content && item.content.toLowerCase().includes(queryLower)) ||
+          (item.author && item.author.toLowerCase().includes(queryLower))
+        ).slice(0, 50);
+
+        if (results.length === 0) {
+          statusContainer.innerHTML = t.noResults.replace('{query}', query);
+          resultsContainer.innerHTML = '';
+          return;
+        }
+
+        statusContainer.innerHTML = t.found.replace('{count}', results.length).replace('{query}', query);
+        
+        let html = '';
+        for (const item of results) {
+          let excerptText = item.excerpt || '';
+          const contentLower = (item.content || '').toLowerCase();
+          const matchIndex = contentLower.indexOf(queryLower);
+          
+          if (matchIndex !== -1) {
+            const start = Math.max(0, matchIndex - 40);
+            const end = Math.min(item.content.length, matchIndex + query.length + 40);
+            excerptText = (start > 0 ? '...' : '') + item.content.substring(start, end) + (end < item.content.length ? '...' : '');
+          }
+
+          html += `
+            <div style="border-bottom: 1px dashed var(--border, #eee); padding: 1.5rem 0;">
+              <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem;">
+                <a href="${item.url}" style="color: var(--text, #333); text-decoration: none;">${highlight(item.title, query)}</a>
+              </div>
+              <div style="color: var(--text-muted, #666); font-size: 0.95rem; line-height: 1.6;">
+                ${highlight(excerptText, query)}
+              </div>
+            </div>
+          `;
+        }
+        resultsContainer.innerHTML = html;
+      };
+
+      input.addEventListener('input', (e) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => performSearch(e.target.value.trim()), 300);
+      });
+
+      input.addEventListener('focus', loadIndex, { once: true });
     }
 
-  document.addEventListener('astro:page-load', initSearch);
-  document.addEventListener('DOMContentLoaded', initSearch);
-</script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCustomSearch);
+    } else {
+      initCustomSearch();
+    }
+    document.addEventListener('astro:page-load', initCustomSearch);
+  </script>
+
 </Layout>
