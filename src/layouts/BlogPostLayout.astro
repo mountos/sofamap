@@ -46,7 +46,7 @@ const translatedCategory = (categoriesTranslation[lang] && categoriesTranslation
           <div class="tags-list">
             <span>Tags</span>
             {frontmatter.tags.map((tag: string) => (
-              <a href={`/tags/${tag}`}>{tag}</a>
+              <a href={`/tags/${tag.toLowerCase()}`}>{tag}</a>
             ))}
           </div>
         </footer>

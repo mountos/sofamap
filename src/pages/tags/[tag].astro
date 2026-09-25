@@ -5,24 +5,34 @@ import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  const allTags = posts.flatMap(post => post.data.tags);
-  const uniqueTags = [...new Set(allTags)];
+  
+  const tagMap = new Map<string, { displayName: string; posts: typeof posts }>();
+  for (const post of posts) {
+    if (!post.data.tags) continue;
+    for (const rawTag of post.data.tags) {
+      const lower = rawTag.toLowerCase();
+      if (!tagMap.has(lower)) {
+        tagMap.set(lower, { displayName: rawTag, posts: [] });
+      }
+      const item = tagMap.get(lower)!;
+      if (!item.posts.some(p => p.id === post.id)) {
+        item.posts.push(post);
+      }
+    }
+  }
 
-  return uniqueTags.map(tag => {
-    const filteredPosts = posts.filter(post => post.data.tags.includes(tag));
-    return {
-      params: { tag },
-      props: { posts: filteredPosts },
-    };
-  });
+  return Array.from(tagMap.entries()).map(([slug, { displayName, posts: filteredPosts }]) => ({
+    params: { tag: slug },
+    props: { posts: filteredPosts, displayName },
+  }));
 }
 
 const { tag } = Astro.params;
-const { posts } = Astro.props;
+const { posts, displayName = tag } = Astro.props;
 ---
-<Layout title={`Tag: ${tag}`}>
+<Layout title={`Tag: ${displayName}`}>
   <section class="post-list">
-    <h2>Tag: {tag}</h2>
+    <h2>Tag: {displayName}</h2>
     <ul>
       {posts.map(post => (
         <li>

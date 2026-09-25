@@ -6,24 +6,34 @@ import { categoriesTranslation } from '../../utils/i18n';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  const allCategories = posts.flatMap(post => post.data.categories);
-  const uniqueCategories = [...new Set(allCategories)];
+  
+  const catMap = new Map<string, { displayName: string; posts: typeof posts }>();
+  for (const post of posts) {
+    if (!post.data.categories) continue;
+    for (const rawCat of post.data.categories) {
+      const lower = rawCat.toLowerCase();
+      if (!catMap.has(lower)) {
+        catMap.set(lower, { displayName: rawCat, posts: [] });
+      }
+      const item = catMap.get(lower)!;
+      if (!item.posts.some(p => p.id === post.id)) {
+        item.posts.push(post);
+      }
+    }
+  }
 
-  return uniqueCategories.map(category => {
-    const filteredPosts = posts.filter(post => post.data.categories.includes(category));
-    return {
-      params: { category },
-      props: { posts: filteredPosts },
-    };
-  });
+  return Array.from(catMap.entries()).map(([slug, { displayName, posts: filteredPosts }]) => ({
+    params: { category: slug },
+    props: { posts: filteredPosts, displayName },
+  }));
 }
 
 const { category } = Astro.params;
-const { posts } = Astro.props;
+const { posts, displayName = category } = Astro.props;
 
 // Determine category display name based on the posts' language
 const firstPostLang = posts.length > 0 ? (posts[0].id.endsWith('.zh-TW.md') ? 'zh-TW' : (posts[0].id.endsWith('.ja.md') ? 'ja' : 'en')) : 'en';
-const categoryDisplayName = (categoriesTranslation[firstPostLang] && categoriesTranslation[firstPostLang][category]) || category;
+const categoryDisplayName = (categoriesTranslation[firstPostLang] && categoriesTranslation[firstPostLang][displayName]) || displayName;
 ---
 <Layout title={`Category: ${categoryDisplayName}`}>
   <section class="post-list">
