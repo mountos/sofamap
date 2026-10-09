@@ -6,6 +6,13 @@ import Layout from "../layouts/Layout.astro";
   title="404: Page Not Found | Astro Pu 璞)"
   description="Sorry, the page you are looking for does not exist. It may have been moved, deleted, or you may have typed the wrong URL."
 >
+    <script is:inline>
+    const pathname = window.location.pathname;
+    const lower = pathname.toLowerCase();
+    if (pathname !== lower) {
+      window.location.replace(lower + window.location.search + window.location.hash);
+    }
+  </script>
   <div class="not-found-container">
     <div class="icon">
       <svg
