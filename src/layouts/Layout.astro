@@ -32,6 +32,15 @@ const isHomepage = Astro.url.pathname === '/';
 <!doctype html>
 <html lang="en">
 	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-MK8LND1S30" is:inline></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-MK8LND1S30');
+		</script>
 		<SEO 
 			title={title} 
 			description={description} 
