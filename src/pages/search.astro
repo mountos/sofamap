@@ -1,17 +1,19 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Search | Astro Pu 璞">
-  <main>
+<Layout title="搜尋文章 | Sofamap 沙發地圖">
+  <main class="static-page">
     <div id="search" class="search-container"></div>
   </main>
   <style>
-    .search-container {
-      padding: 2rem 1rem;
+    .static-page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
     }
   </style>
-  
+
   <script is:inline>
     function initCustomSearch() {
       const container = document.querySelector("#search");
@@ -19,20 +21,22 @@ import Layout from "../layouts/Layout.astro";
       container._initialized = true;
 
       const path = window.location.pathname;
-      let lang = 'zh';
-      if (path.includes('/ja/')) lang = 'ja';
-      if (path.includes('/en/')) lang = 'en';
-      
+      let currentLang = 'zh-tw';
+      if (path.startsWith('/sc/') || path.includes('/sc/')) currentLang = 'sc';
+      else if (path.startsWith('/ja/') || path.includes('/ja/')) currentLang = 'ja';
+      else if (path.startsWith('/en/') || path.includes('/en/')) currentLang = 'en';
+
       const t = {
-        zh: { placeholder: "搜尋文章...", noResults: "找不到與 \"{query}\" 相關的結果", found: "找到 {count} 篇關於 \"{query}\" 的文章" },
-        en: { placeholder: "Search articles...", noResults: "No results found for \"{query}\"", found: "Found {count} results for \"{query}\"" },
-        ja: { placeholder: "記事を検索...", noResults: "\"{query}\" に関する結果が見つかりません", found: "\"{query}\" に関する記事が {count} 件見つかりました" }
-      }[lang];
+        'zh-tw': { placeholder: "搜尋沙發客、旅行冒險與各國文化體驗...", noResults: "找不到與 \"{query}\" 相關的結果", found: "找到 {count} 篇關於 \"{query}\" 的文章" },
+        'sc': { placeholder: "搜索沙发客、旅行冒险与各国文化体验...", noResults: "未找到与 \"{query}\" 相关的结果", found: "找到 {count} 篇关于 \"{query}\" 的文章" },
+        'en': { placeholder: "Search couchsurfing, travels, adventures...", noResults: "No results found for \"{query}\"", found: "Found {count} results for \"{query}\"" },
+        'ja': { placeholder: "カウチサーフィン、旅行、冒険を検索...", noResults: "\"{query}\" に関する結果が見つかりません", found: "\"{query}\" に関する記事が {count} 件見つかりました" }
+      }[currentLang] || { placeholder: "搜尋文章...", noResults: "找不到結果", found: "找到 {count} 篇文章" };
 
       container.innerHTML = `
         <div class="search-input-wrapper" style="position: relative; margin-bottom: 2rem;">
-          <input type="text" id="custom-search-input" placeholder="${t.placeholder}" autocomplete="off" style="width: 100%; padding: 1rem 1.5rem; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border, #ccc); background: var(--bg-card, #fff); color: var(--text, #333);">
-          <div id="search-status" style="margin-top: 1rem; color: var(--text-muted, #666); text-align: center;"></div>
+          <input type="search" id="custom-search-input" placeholder="${t.placeholder}" autocomplete="off" style="width: 100%; padding: 1rem 1.5rem; font-size: 1.05rem; border-radius: 8px; border: 1px solid var(--border, #ccc); background: var(--bg-card, #fff); color: var(--text, #333); box-sizing: border-box; outline: none;">
+          <div id="search-status" style="margin-top: 1rem; color: var(--text-muted, #666); text-align: center; font-size: 0.95rem;"></div>
         </div>
         <div id="custom-search-results"></div>
       `;
@@ -46,74 +50,120 @@ import Layout from "../layouts/Layout.astro";
       let timeoutId = null;
 
       const loadIndex = async () => {
-        if (searchIndex || isLoading) return;
+        if (searchIndex || isLoading) return searchIndex;
         isLoading = true;
         try {
           const res = await fetch('/search-index.json');
           const data = await res.json();
           searchIndex = data.filter(item => {
-            if (!item.lang) return true;
-            return item.lang === lang;
+            const itemLang = (item.lang || 'zh-tw').toLowerCase();
+            if (currentLang === 'zh-tw') return itemLang === 'zh-tw' || itemLang === 'zh';
+            return itemLang === currentLang;
           });
         } catch (e) {
           console.error("Failed to load search index", e);
         } finally {
           isLoading = false;
-          if (input.value.trim()) performSearch(input.value.trim());
+          if (input && input.value.trim()) performSearch(input.value.trim());
         }
+        return searchIndex;
       };
 
-      const highlight = (text, query) => {
-        if (!query || !text) return text;
-        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        return text.replace(regex, '<mark style="background: var(--primary-soft, #e6f2ff); color: var(--primary, #0066cc); padding: 0 0.2em; border-radius: 4px;">$1</mark>');
+      const highlight = (text, queryTerms) => {
+        if (!text || !queryTerms || queryTerms.length === 0) return text || '';
+        let escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        queryTerms.forEach(term => {
+          if (!term) return;
+          const reg = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+          escaped = escaped.replace(reg, '<mark style="background: rgba(178, 83, 56, 0.15); color: #b25338; padding: 0 0.2em; border-radius: 3px; font-weight: 600;">$1</mark>');
+        });
+        return escaped;
       };
 
       const performSearch = (query) => {
-        if (!query) {
+        const trimmed = (query || '').trim();
+        const url = new URL(window.location.href);
+        if (trimmed) {
+          url.searchParams.set('q', trimmed);
+        } else {
+          url.searchParams.delete('q');
           resultsContainer.innerHTML = '';
           statusContainer.innerHTML = '';
+          window.history.replaceState({}, '', url.toString());
           return;
         }
+        window.history.replaceState({}, '', url.toString());
+
         if (!searchIndex) {
           loadIndex();
           return;
         }
 
-        const queryLower = query.toLowerCase();
-        const results = searchIndex.filter(item => 
-          (item.title && item.title.toLowerCase().includes(queryLower)) ||
-          (item.content && item.content.toLowerCase().includes(queryLower)) ||
-          (item.author && item.author.toLowerCase().includes(queryLower))
-        ).slice(0, 50);
+        const terms = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
+        if (terms.length === 0) return;
+
+        const results = [];
+        for (const item of searchIndex) {
+          const titleLower = (item.title || '').toLowerCase();
+          const descLower = (item.excerpt || item.description || '').toLowerCase();
+          const contentLower = (item.content || '').toLowerCase();
+          const tagsLower = (item.tags || []).map(t => String(t).toLowerCase());
+
+          let matchAll = true;
+          let score = 0;
+          for (const t of terms) {
+            let matched = false;
+            if (titleLower.includes(t)) { matched = true; score += 100; }
+            if (tagsLower.some(tag => tag.includes(t))) { matched = true; score += 60; }
+            if (descLower.includes(t)) { matched = true; score += 40; }
+            if (contentLower.includes(t)) { matched = true; score += 20; }
+            if (!matched) matchAll = false;
+          }
+
+          if (matchAll && score > 0) {
+            results.push({ item, score });
+          }
+        }
+
+        results.sort((a, b) => b.score - a.score);
 
         if (results.length === 0) {
-          statusContainer.innerHTML = t.noResults.replace('{query}', query);
+          statusContainer.innerHTML = t.noResults.replace('{query}', trimmed.replace(/</g, '&lt;'));
           resultsContainer.innerHTML = '';
           return;
         }
 
-        statusContainer.innerHTML = t.found.replace('{count}', results.length).replace('{query}', query);
-        
+        statusContainer.innerHTML = t.found.replace('{count}', results.length).replace('{query}', trimmed.replace(/</g, '&lt;'));
+
         let html = '';
-        for (const item of results) {
-          let excerptText = item.excerpt || '';
-          const contentLower = (item.content || '').toLowerCase();
-          const matchIndex = contentLower.indexOf(queryLower);
-          
-          if (matchIndex !== -1) {
-            const start = Math.max(0, matchIndex - 40);
-            const end = Math.min(item.content.length, matchIndex + query.length + 40);
-            excerptText = (start > 0 ? '...' : '') + item.content.substring(start, end) + (end < item.content.length ? '...' : '');
+        for (const { item } of results.slice(0, 50)) {
+          let excerptText = item.excerpt || item.description || '';
+          const content = item.content || '';
+          const contentLower = content.toLowerCase();
+
+          let firstMatch = -1;
+          let matchLen = 0;
+          for (const t of terms) {
+            const idx = contentLower.indexOf(t);
+            if (idx !== -1 && (firstMatch === -1 || idx < firstMatch)) {
+              firstMatch = idx;
+              matchLen = t.length;
+            }
+          }
+
+          if (firstMatch !== -1) {
+            const start = Math.max(0, firstMatch - 50);
+            const end = Math.min(content.length, firstMatch + matchLen + 80);
+            excerptText = (start > 0 ? '...' : '') + content.substring(start, end).trim() + (end < content.length ? '...' : '');
           }
 
           html += `
             <div style="border-bottom: 1px dashed var(--border, #eee); padding: 1.5rem 0;">
               <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem;">
-                <a href="${item.url}" style="color: var(--text, #333); text-decoration: none;">${highlight(item.title, query)}</a>
+                <a href="${item.url}" style="color: var(--text, #333); text-decoration: none;">${highlight(item.title, terms)}</a>
               </div>
               <div style="color: var(--text-muted, #666); font-size: 0.95rem; line-height: 1.6;">
-                ${highlight(excerptText, query)}
+                ${highlight(excerptText, terms)}
               </div>
             </div>
           `;
@@ -123,10 +173,19 @@ import Layout from "../layouts/Layout.astro";
 
       input.addEventListener('input', (e) => {
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => performSearch(e.target.value.trim()), 300);
+        timeoutId = setTimeout(() => performSearch(e.target.value), 200);
       });
 
       input.addEventListener('focus', loadIndex, { once: true });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialQ = urlParams.get('q') || urlParams.get('query');
+      if (initialQ) {
+        input.value = initialQ;
+        loadIndex().then(() => performSearch(initialQ));
+      } else {
+        setTimeout(loadIndex, 500);
+      }
     }
 
     if (document.readyState === 'loading') {
@@ -136,5 +195,4 @@ import Layout from "../layouts/Layout.astro";
     }
     document.addEventListener('astro:page-load', initCustomSearch);
   </script>
-
 </Layout>
