@@ -1,0 +1,511 @@
+---
+interface Props {
+  lang?: string;
+}
+
+const { lang = 'zh-TW' } = Astro.props;
+
+function normalizeLang(langStr: string): 'zh-tw' | 'sc' | 'en' | 'ja' {
+  const l = (langStr || '').toLowerCase();
+  if (l.includes('en')) return 'en';
+  if (l.includes('ja')) return 'ja';
+  if (l.includes('sc') || l.includes('hans') || l.includes('cn')) return 'sc';
+  return 'zh-tw';
+}
+
+const currentLang = normalizeLang(lang);
+const prefix = currentLang === 'zh-tw' ? '' : (currentLang === 'sc' ? '/sc' : `/${currentLang}`);
+const mainRssUrl = `${prefix}/rss.xml`;
+
+const labels = {
+  'zh-tw': {
+    formTitle: '📬 免費訂閱 SOFA MAP 沙發地圖電子報',
+    subtitle: '足不出戶探索世界地圖、異國人文風情與遠距生活靈感，在沙發上為您展開全球漫遊之旅。',
+    emailLabel: '電子郵件位址 (Email Address) *',
+    emailPlaceholder: 'your.email@example.com',
+    nameLabel: '稱呼 / 暱稱 (Name / Nickname)',
+    namePlaceholder: '如何稱呼您（選填）',
+    submitBtn: '✉️ 免費訂閱電子報',
+    submitting: '⏳ 處理中...',
+    success: '🎉 感謝您的訂閱！我們已將您的信箱加入發送名冊。',
+    error: '訂閱失敗，請檢查電子郵件或稍後再試。',
+    rssTitle: '📰 Chrome 新分頁推薦圖卡 ＆ RSS 全文訂閱',
+    rssDesc: '支援 Google Discover（探索）、Chrome 內建「追蹤（Follow）」與 Feedly 等閱讀器，每篇皆附完整全文。',
+    rssMainBtn: '訂閱全站 RSS Feed',
+    rssCopyBtn: '複製 RSS 網址',
+    rssCopied: '已複製 RSS 網址！',
+    chromeTipTitle: '💡 如何在手機 Chrome 首頁看到「SOFA MAP」最新圖卡？',
+    chromeTipStep: '在 Android / iOS 的 Chrome 瀏覽器開啟本站任一頁面，點擊右上角選單「⋮」› 點選「＋ 追蹤（Follow）」，未來開啟 Chrome 新分頁時，就能在「為您推薦 / 已追蹤」直接看到 SOFA MAP 最新圖卡！',
+  },
+  'sc': {
+    formTitle: '📬 免费订阅 SOFA MAP 沙发地图电子报',
+    subtitle: '足不出户探索世界地图、异国人文风情与远距生活灵感，在沙发上为您展开全球漫游之旅。',
+    emailLabel: '电子邮件位址 (Email Address) *',
+    emailPlaceholder: 'your.email@example.com',
+    nameLabel: '称呼 / 昵称 (Name / Nickname)',
+    namePlaceholder: '如何称呼您（选填）',
+    submitBtn: '✉️ 免费订阅电子报',
+    submitting: '⏳ 处理中...',
+    success: '🎉 感谢您的订阅！我们已将您的邮箱加入发送名册。',
+    error: '订阅失败，请检查电子邮件或稍后再试。',
+    rssTitle: '📰 Chrome 新标签页推荐图卡 ＆ RSS 全文订阅',
+    rssDesc: '支持 Google Discover（探索）、Chrome 内置「关注（Follow）」与 Feedly 等阅读器，每篇均附完整全文。',
+    rssMainBtn: '订阅全站 RSS Feed',
+    rssCopyBtn: '复制 RSS 网址',
+    rssCopied: '已复制 RSS 网址！',
+    chromeTipTitle: '💡 如何在手机 Chrome 首页看到「SOFA MAP」最新图卡？',
+    chromeTipStep: '在 Android / iOS 的 Chrome 浏览器打开本站任一页面，点击右上角菜单「⋮」› 点击「＋ 关注（Follow）」，未来打开 Chrome 新标签页时，即可在「为您推荐 / 已关注」直接看到 SOFA MAP 最新图卡！',
+  },
+  'en': {
+    formTitle: '📬 Subscribe to SOFA MAP Dispatch',
+    subtitle: 'Explore world geography, cultural stories, and armchair wanderlust delivered straight to your inbox.',
+    emailLabel: 'Email Address *',
+    emailPlaceholder: 'your.email@example.com',
+    nameLabel: 'Your Name (Optional)',
+    namePlaceholder: 'How should we address you?',
+    submitBtn: '✉️ Subscribe for Free',
+    submitting: '⏳ Subscribing...',
+    success: '🎉 Thank you for subscribing! Your email has been added to our mailing list.',
+    error: 'Subscription failed. Please check your email or try again later.',
+    rssTitle: '📰 Chrome New Tab Cards & Full-Text RSS Feeds',
+    rssDesc: 'Optimized for Google Discover, Chrome Follow, and RSS readers like Feedly — complete with full text.',
+    rssMainBtn: 'All Stories RSS Feed',
+    rssCopyBtn: 'Copy RSS URL',
+    rssCopied: 'RSS URL Copied!',
+    chromeTipTitle: '💡 How to see SOFA MAP cards on your Chrome New Tab page?',
+    chromeTipStep: 'Open SOFA MAP in mobile Chrome, tap the top-right menu (⋮) › select "+ Follow". Our travel stories will appear directly on your Chrome New Tab feed!',
+  },
+  'ja': {
+    formTitle: '📬 SOFA MAP（ソファマップ）ニュースレターに無料登録',
+    subtitle: 'ソファから世界を旅する。地図を巡る異国の物語、文化の魅力、暮らしのインスピレーションをお届けします。',
+    emailLabel: 'メールアドレス *',
+    emailPlaceholder: 'your.email@example.com',
+    nameLabel: 'お名前・ニックネーム（任意）',
+    namePlaceholder: 'お名前（任意）',
+    submitBtn: '✉️ 無料で購読する',
+    submitting: '⏳ 処理中...',
+    success: '🎉 ご登録ありがとうございます！配信リストに追加されました。',
+    error: '登録に失敗しました。メールアドレスをご確認の上、再度お試しください。',
+    rssTitle: '📰 Chrome 新しいタブのカード ＆ 全文 RSS 配信',
+    rssDesc: 'Google Discover、Chrome の「フォロー」機能、Feedly などの RSS リーダーに対応。全文を配信します。',
+    rssMainBtn: 'サイト全体の RSS フィード',
+    rssCopyBtn: 'RSS URL をコピー',
+    rssCopied: 'コピーしました！',
+    chromeTipTitle: '💡 スマホ版 Chrome の新しいタブで「SOFA MAP」を表示するには？',
+    chromeTipStep: 'モバイル版 Chrome で当サイトを開き、右上のメニュー「⋮」から「＋ フォロー」をタップすると、新しいタブの「おすすめ / フォロー中」に最新記事カードが表示されます。',
+  },
+};
+
+const current = labels[currentLang];
+---
+
+<div class="newsletter-subscription-box">
+  <!-- 電子報表單 -->
+  <div class="newsletter-card">
+    <div class="card-header">
+      <h3>{current.formTitle}</h3>
+      <p class="card-subtitle">{current.subtitle}</p>
+    </div>
+
+    <form id="newsletter-form-sofamap" class="newsletter-form">
+      <input type="hidden" name="site" value="sofamap.com" />
+      <input type="hidden" name="type" value="newsletter" />
+      <input type="hidden" name="lang" value={currentLang} />
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="newsletter-email-sofamap">{current.emailLabel}</label>
+          <input
+            type="email"
+            id="newsletter-email-sofamap"
+            name="email"
+            required
+            placeholder={current.emailPlaceholder}
+            autocomplete="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="newsletter-name-sofamap">{current.nameLabel}</label>
+          <input
+            type="text"
+            id="newsletter-name-sofamap"
+            name="name"
+            placeholder={current.namePlaceholder}
+            autocomplete="name"
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        id="newsletter-submit-btn-sofamap"
+        class="subscribe-submit-btn"
+        data-submitting={current.submitting}
+        data-normal={current.submitBtn}
+      >
+        {current.submitBtn}
+      </button>
+
+      <div
+        id="newsletter-response-sofamap"
+        class="response-message"
+        data-success-msg={current.success}
+        data-error-msg={current.error}
+      >
+      </div>
+    </form>
+  </div>
+
+  <!-- Chrome Discover / Follow & RSS 訂閱卡片 -->
+  <div class="rss-discover-card">
+    <div class="rss-header">
+      <h3>{current.rssTitle}</h3>
+      <p>{current.rssDesc}</p>
+    </div>
+
+    <div class="chrome-follow-tip">
+      <strong>{current.chromeTipTitle}</strong>
+      <p>{current.chromeTipStep}</p>
+    </div>
+
+    <div class="rss-main-actions">
+      <a href={mainRssUrl} target="_blank" rel="noopener" class="rss-primary-btn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 11a9 9 0 0 1 9 9" />
+          <path d="M4 4a16 16 0 0 1 16 16" />
+          <circle cx="5" cy="19" r="1" />
+        </svg>
+        <span>{current.rssMainBtn}</span>
+      </a>
+      <button
+        type="button"
+        class="rss-copy-btn"
+        id="copy-sofamap-rss-btn"
+        data-rss-url={`https://sofamap.com${mainRssUrl}`}
+        data-normal-label={current.rssCopyBtn}
+        data-copied-label={current.rssCopied}
+      >
+        {current.rssCopyBtn}
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initNewsletterForm() {
+    const form = document.getElementById("newsletter-form-sofamap") as HTMLFormElement;
+    const responseElem = document.getElementById("newsletter-response-sofamap");
+    const submitBtn = document.getElementById("newsletter-submit-btn-sofamap") as HTMLButtonElement;
+
+    if (!form || !submitBtn) return;
+    if ((form as any)._initialized) return;
+    (form as any)._initialized = true;
+
+    const normalText = submitBtn.dataset.normal || "✉️ 免費訂閱電子報";
+    const submittingText = submitBtn.dataset.submitting || "⏳ 處理中...";
+    const successMsg = responseElem?.dataset.successMsg || "🎉 感謝您的訂閱！";
+    const errorMsg = responseElem?.dataset.errorMsg || "訂閱失敗，請稍後再試。";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = submittingText;
+      if (responseElem) responseElem.style.display = "none";
+
+      const formData = new FormData(form);
+      const payload: Record<string, any> = Object.fromEntries(formData.entries());
+
+      try {
+        const traceRes = await fetch("/cdn-cgi/trace");
+        const traceText = await traceRes.text();
+        const ipMatch = traceText.match(/ip=(.+)/);
+        const locMatch = traceText.match(/loc=(.+)/);
+        if (ipMatch) payload.ip = ipMatch[1].trim();
+        if (locMatch) payload.country = locMatch[1].trim();
+
+        payload.userAgent = navigator.userAgent;
+        payload.language = navigator.language;
+        payload.url = window.location.href;
+      } catch (err) {}
+
+      try {
+        const res = await fetch(
+          "https://script.google.com/macros/s/AKfycbzyX_hBo19vRFj5yn3WZqTGk4_gN58Y6g0fQH4IOKnZyJm2tGnCp9inNZt-rk1JssoF/exec",
+          {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload),
+          }
+        );
+        const result = await res.json();
+
+        if (responseElem) {
+          responseElem.style.display = "block";
+          if (result.success) {
+            responseElem.className = "response-message success";
+            responseElem.textContent = successMsg;
+            form.reset();
+          } else {
+            responseElem.className = "response-message error";
+            responseElem.textContent = errorMsg;
+          }
+        }
+      } catch (err) {
+        if (responseElem) {
+          responseElem.style.display = "block";
+          responseElem.className = "response-message error";
+          responseElem.textContent = errorMsg;
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = normalText;
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initNewsletterForm);
+  } else {
+    initNewsletterForm();
+  }
+  document.addEventListener("astro:page-load", initNewsletterForm);
+
+  function initRssCopyBtn() {
+    const copyBtn = document.getElementById("copy-sofamap-rss-btn") as HTMLButtonElement | null;
+    if (!copyBtn || (copyBtn as any)._initialized) return;
+    (copyBtn as any)._initialized = true;
+    copyBtn.addEventListener("click", () => {
+      const url = copyBtn.dataset.rssUrl || "https://sofamap.com/rss.xml";
+      const normal = copyBtn.dataset.normalLabel || "Copy RSS URL";
+      const copied = copyBtn.dataset.copiedLabel || "Copied!";
+      navigator.clipboard?.writeText(url).then(() => {
+        copyBtn.textContent = copied;
+        setTimeout(() => {
+          copyBtn.textContent = normal;
+        }, 2000);
+      });
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initRssCopyBtn);
+  } else {
+    initRssCopyBtn();
+  }
+  document.addEventListener("astro:page-load", initRssCopyBtn);
+</script>
+
+<style>
+  .newsletter-subscription-box {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .newsletter-card {
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #fed7aa;
+    border-radius: 14px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    text-align: left;
+  }
+
+  .card-header h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #9a3412;
+  }
+
+  .card-subtitle {
+    margin: 0 0 1.25rem 0;
+    font-size: 0.95rem;
+    color: #c2410c;
+    line-height: 1.55;
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 640px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+  }
+
+  .form-group label {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #9a3412;
+  }
+
+  .form-group input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #fdba74;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #ffffff;
+    color: #1a202c;
+    box-sizing: border-box;
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  }
+
+  .subscribe-submit-btn {
+    align-self: flex-start;
+    background: #ea580c;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.85rem 1.75rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .subscribe-submit-btn:hover:not(:disabled) {
+    background: #c2410c;
+    transform: translateY(-1px);
+  }
+
+  .subscribe-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .response-message {
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: none;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+
+  .response-message.success {
+    background: #f0fff4;
+    color: #276749;
+    border: 1px solid #9ae6b4;
+  }
+
+  .response-message.error {
+    background: #fff5f5;
+    color: #9b2c2c;
+    border: 1px solid #feb2b2;
+  }
+
+  /* RSS & Chrome Discover Card */
+  .rss-discover-card {
+    padding: 1.75rem 2rem;
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 1px solid #fed7aa;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    text-align: left;
+  }
+
+  .rss-header h3 {
+    margin: 0 0 0.35rem 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #9a3412;
+  }
+
+  .rss-header p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: #c2410c;
+    line-height: 1.5;
+  }
+
+  .chrome-follow-tip {
+    background: rgba(255, 255, 255, 0.75);
+    border-left: 4px solid #ea580c;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+  }
+
+  .chrome-follow-tip strong {
+    display: block;
+    font-size: 0.92rem;
+    color: #7c2d12;
+    margin-bottom: 0.25rem;
+  }
+
+  .chrome-follow-tip p {
+    margin: 0;
+    font-size: 0.86rem;
+    color: #9a3412;
+    line-height: 1.5;
+  }
+
+  .rss-main-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .rss-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ea580c;
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.72rem 1.35rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .rss-primary-btn:hover {
+    background: #c2410c;
+    transform: translateY(-1px);
+  }
+
+  .rss-copy-btn {
+    background: #ffffff;
+    color: #c2410c;
+    border: 1px solid #fb923c;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.7rem 1.15rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .rss-copy-btn:hover {
+    background: #fed7aa;
+  }
+</style>

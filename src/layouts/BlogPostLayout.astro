@@ -1,6 +1,7 @@
 ---
 import Layout from './Layout.astro';
 import ToC from '../components/ToC.astro';
+import SubscribeWidget from '../components/SubscribeWidget.astro';
 import { categoriesTranslation } from '../utils/i18n';
 const { frontmatter, headings } = Astro.props;
 
@@ -39,6 +40,7 @@ const translatedCategory = (categoriesTranslation[lang] && categoriesTranslation
 
       <div class="content" itemprop="articleBody">
         <slot />
+        <SubscribeWidget lang={lang} />
       </div>
 
       {frontmatter.tags?.length > 0 &&
