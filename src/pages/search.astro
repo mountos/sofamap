@@ -53,12 +53,16 @@ import Layout from '../layouts/Layout.astro';
         if (searchIndex || isLoading) return searchIndex;
         isLoading = true;
         try {
-          const res = await fetch('/search-index.json');
+          const langKey = (currentLang || 'zh-tw').toLowerCase();
+          let res = await fetch(`/search-index-${langKey}.json`);
+          if (!res.ok) {
+            res = await fetch('/search-index.json');
+          }
           const data = await res.json();
           searchIndex = data.filter(item => {
             const itemLang = (item.lang || 'zh-tw').toLowerCase();
-            if (currentLang === 'zh-tw') return itemLang === 'zh-tw' || itemLang === 'zh';
-            return itemLang === currentLang;
+            if (langKey === 'zh-tw') return itemLang === 'zh-tw' || itemLang === 'zh';
+            return itemLang === langKey;
           });
         } catch (e) {
           console.error("Failed to load search index", e);
@@ -105,8 +109,7 @@ import Layout from '../layouts/Layout.astro';
         const results = [];
         for (const item of searchIndex) {
           const titleLower = (item.title || '').toLowerCase();
-          const descLower = (item.excerpt || item.description || '').toLowerCase();
-          const contentLower = (item.content || '').toLowerCase();
+          const descLower = (item.excerpt || '').toLowerCase();
           const tagsLower = (item.tags || []).map(t => String(t).toLowerCase());
 
           let matchAll = true;
@@ -116,7 +119,6 @@ import Layout from '../layouts/Layout.astro';
             if (titleLower.includes(t)) { matched = true; score += 100; }
             if (tagsLower.some(tag => tag.includes(t))) { matched = true; score += 60; }
             if (descLower.includes(t)) { matched = true; score += 40; }
-            if (contentLower.includes(t)) { matched = true; score += 20; }
             if (!matched) matchAll = false;
           }
 
@@ -137,25 +139,7 @@ import Layout from '../layouts/Layout.astro';
 
         let html = '';
         for (const { item } of results.slice(0, 50)) {
-          let excerptText = item.excerpt || item.description || '';
-          const content = item.content || '';
-          const contentLower = content.toLowerCase();
-
-          let firstMatch = -1;
-          let matchLen = 0;
-          for (const t of terms) {
-            const idx = contentLower.indexOf(t);
-            if (idx !== -1 && (firstMatch === -1 || idx < firstMatch)) {
-              firstMatch = idx;
-              matchLen = t.length;
-            }
-          }
-
-          if (firstMatch !== -1) {
-            const start = Math.max(0, firstMatch - 50);
-            const end = Math.min(content.length, firstMatch + matchLen + 80);
-            excerptText = (start > 0 ? '...' : '') + content.substring(start, end).trim() + (end < content.length ? '...' : '');
-          }
+          const excerptText = item.excerpt || '';
 
           html += `
             <div style="border-bottom: 1px dashed var(--border, #eee); padding: 1.5rem 0;">
